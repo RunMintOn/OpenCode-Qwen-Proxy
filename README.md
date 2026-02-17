@@ -270,8 +270,8 @@ opencode auth login
 ### 1. 克隆项目
 
 ```bash
-git clone ...
-cd ...
+git clone https://github.com/RunMintOn/OpenCode-Qwen-Auth.git
+cd OpenCode-Qwen-Auth
 ```
 
 ### 2. 安装依赖
