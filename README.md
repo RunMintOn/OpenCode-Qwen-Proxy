@@ -15,7 +15,7 @@
 ### 1. 安装插件
 
 ```bash
-cd ~/.opencode && npm install github:RunMintOn/OpenCode-Qwen-Auth
+cd ~/.opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```
 
 ### 2. 启用插件
@@ -270,8 +270,8 @@ opencode auth login
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/RunMintOn/OpenCode-Qwen-Auth.git
-cd OpenCode-Qwen-Auth
+git clone https://github.com/RunMintOn/OpenCode-Qwen-Proxy.git
+cd OpenCode-Qwen-Proxy
 ```
 
 ### 2. 安装依赖
@@ -287,7 +287,7 @@ npm install
 ```json
 {
   "dependencies": {
-    "opencode-qwen-proxy": "file:/path/to/OpenCode-Qwen-Auth"
+    "opencode-qwen-proxy": "file:/path/to/OpenCode-Qwen-Proxy"
   }
 }
 ```
@@ -309,7 +309,7 @@ npm run build
 ## 📁 项目结构
 
 ```
-qwencode-auth-improved/
+opencode-qwen-proxy/
 ├── src/
 │   ├── index.ts              # 插件入口（loader + fetch + methods）
 │   ├── constants.ts          # OAuth 端点、模型配置

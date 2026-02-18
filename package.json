@@ -26,11 +26,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RunMintOn/OpenCode-Qwen-Auth.git"
+    "url": "git+https://github.com/RunMintOn/OpenCode-Qwen-Proxy.git"
   },
-  "homepage": "https://github.com/RunMintOn/OpenCode-Qwen-Auth#readme",
+  "homepage": "https://github.com/RunMintOn/OpenCode-Qwen-Proxy#readme",
   "bugs": {
-    "url": "https://github.com/RunMintOn/OpenCode-Qwen-Auth/issues"
+    "url": "https://github.com/RunMintOn/OpenCode-Qwen-Proxy/issues"
   },
   "devDependencies": {
     "@opencode-ai/plugin": "^1.1.48",
