@@ -15,12 +15,12 @@
 ### 1. 安装插件
 
 ```bash
-cd ~/.opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
+cd ~/.config/opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```
 
 ### 2. 启用插件
 
-编辑 `~/.opencode/opencode.jsonc`：
+编辑 `~/.config/opencode/opencode.jsonc`：
 
 ```json
 {
@@ -267,22 +267,74 @@ opencode auth login
 
 ## 🛠️ 本地开发
 
-### 1. 克隆项目
+### 方法一：使用 npm link（推荐）
+
+**步骤 1：克隆项目**
 
 ```bash
 git clone https://github.com/RunMintOn/OpenCode-Qwen-Proxy.git
 cd OpenCode-Qwen-Proxy
 ```
 
-### 2. 安装依赖
+**步骤 2：安装依赖**
 
 ```bash
 npm install
 ```
 
-### 3. 本地测试
+**步骤 3：链接插件**
 
-编辑 `~/.opencode/package.json`：
+```bash
+# 在插件项目目录下执行 link
+npm link
+```
+
+**步骤 4：在 OpenCode 中配置**
+
+```bash
+# 进入 OpenCode 配置目录
+cd ~/.config/opencode
+
+# 如果已有 package.json，直接添加依赖
+npm install opencode-qwen-proxy --save
+
+# 如果没有 package.json，先初始化
+npm init -y
+npm install opencode-qwen-proxy --save
+```
+
+**步骤 5：验证插件加载**
+
+```bash
+# 重启 OpenCode 或开始新对话
+opencode --version
+```
+
+---
+
+### 方法二：使用 file: 协议（适用于需要指定特定版本）
+
+**步骤 1-3：同上**
+
+```bash
+# 克隆项目并安装依赖
+git clone https://github.com/RunMintOn/OpenCode-Qwen-Proxy.git
+cd OpenCode-Qwen-Proxy
+npm install
+```
+
+**步骤 4：先构建插件**
+
+```bash
+# 构建插件（必须先构建）
+npm run build
+```
+
+> 注意：`file:` 协议需要指向包含 `package.json` 的目录，所以必须先执行构建。
+
+**步骤 5：配置本地链接**
+
+编辑 `~/.config/opencode/package.json`：
 
 ```json
 {
@@ -292,17 +344,79 @@ npm install
 }
 ```
 
-然后：
+> 将 `/path/to/OpenCode-Qwen-Proxy` 替换为实际的绝对路径，例如：
+> - Linux/Mac: `file:/home/username/OpenCode-Qwen-Proxy`
+> - Windows: `file:C:/Users/username/OpenCode-Qwen-Proxy`
+
+**步骤 6：安装依赖**
 
 ```bash
-cd ~/.opencode && npm install
+cd ~/.config/opencode && npm install
 ```
 
-### 4. 构建
+---
+
+### 开发模式（推荐）
+
+开发过程中可以使用 watch 模式，自动重新加载：
 
 ```bash
-npm run build
+# 在插件项目目录下
+npm run dev
 ```
+
+这样修改代码后会自动重新构建，方便实时调试。
+
+---
+
+### 构建命令说明
+
+| 命令 | 说明 |
+|------|------|
+| `npm run build` | 构建生产版本到 `dist/` 目录 |
+| `npm run dev` | 开发模式，监听文件变化自动重新构建 |
+| `npm run typecheck` | TypeScript 类型检查 |
+
+---
+
+### 调试技巧
+
+**1. 启用调试日志**
+
+```bash
+# 临时启用调试日志
+OPENCODE_QWEN_DEBUG=1 opencode ...
+```
+
+**2. 查看插件日志**
+
+插件运行时会输出调试信息（如果启用了调试模式），可以帮助排查问题。
+
+**3. 检查凭证**
+
+```bash
+# 查看凭证文件位置
+cat ~/.qwen/oauth_creds.json
+```
+
+---
+
+### 常见问题
+
+**Q：修改代码后需要重新 install 吗？**
+
+> A：使用 `npm link` 不需要；使用 `file:` 协议每次修改代码后需要重新 `npm install`（或者用 `npm run dev` 自动构建后重启 OpenCode）。
+
+**Q：如何确认插件已加载？**
+
+> A：在 OpenCode 中执行 `opencode auth login`，如果能看到 "Qwen Code (qwen.ai OAuth)" 选项，说明插件已正确加载。
+
+**Q：遇到问题怎么办？**
+
+> A：
+> 1. 确认 `~/.config/opencode/opencode.jsonc` 中已添加 `"plugin": ["opencode-qwen-proxy"]`
+> 2. 运行 `npm run typecheck` 检查代码是否有语法错误
+> 3. 查看控制台输出是否有错误信息
 
 ---
 
