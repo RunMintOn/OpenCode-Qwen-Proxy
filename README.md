@@ -1,6 +1,6 @@
 # 🤖 Qwen Code OAuth Plugin for OpenCode 
 
-> **Enhanced Version** - Added request throttling, 429 handling, header alignment and other enhancements based on [opencode-wencode-auth](https://github.com/gustavodiasdev/opencode-wencode-auth)
+> **Enhanced Version** - Added request throttling, 429 handling, header alignment and other enhancements based on [opencode-qwencode-auth](https://github.com/gustavodiasdev/opencode-qwencode-auth)
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -442,7 +442,7 @@ opencode-qwen-proxy/
 
 ## 🔗 Related Projects
 
-- **[opencode-wencode-auth](https://github.com/gustavodiasdev/opencode-wencode-auth)** - Base of this project
+- **[opencode-qwencode-auth](https://github.com/gustavodiasdev/opencode-qwencode-auth)** - Base of this project
 - [qwen-code](https://github.com/QwenLM/qwen-code) - Official Qwen Code CLI
 - [OpenCode](https://opencode.ai) - AI Programming Assistant CLI
 - [opencode-antigravity-auth](https://github.com/NoeFabris/opencode-antigravity-auth) - Google OAuth reference implementation
