@@ -1,4 +1,4 @@
-# 🤖 Qwen Code OAuth Plugin for OpenCode (Improved)
+# 🤖 Qwen Code OAuth Plugin for OpenCode 
 
 > **改进版** - 在 [opencode-qwencode-auth](https://github.com/gustavodiasdev/opencode-qwencode-auth) 基础上添加了请求节流、429 处理、请求头对齐等增强功能
 
@@ -34,7 +34,7 @@ cd ~/.config/opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 opencode auth login
 ```
 
-然后疯狂按"↓",选择 **"Other"** → 输入 `qwen-code` → 选择 **"Qwen Code (qwen.ai OAuth)"**
+然后疯狂按住"↓",选择 **"Other"** → 输入 `qwen-code` → 选择 **"Qwen Code (qwen.ai OAuth)"**
 
 浏览器会自动打开，登录 qwen.ai 并授权即可。
 
@@ -76,7 +76,7 @@ opencode --provider qwen-code --model vision-model
 ```
 
 > **注意**：![alt text](image.png)
-根据qwen code描述,coder-model 模型就是最新发布的qwen 3.5 plus
+**根据qwen code描述,coder-model 模型就是最新发布的qwen 3.5 plus**
 
 
 ---
