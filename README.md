@@ -1,26 +1,27 @@
 # 🤖 Qwen Code OAuth Plugin for OpenCode 
 
-> **改进版** - 在 [opencode-qwencode-auth](https://github.com/gustavodiasdev/opencode-qwencode-auth) 基础上添加了请求节流、429 处理、请求头对齐等增强功能
+> **Enhanced Version** - Added request throttling, 429 handling, header alignment and other enhancements based on [opencode-wencode-auth](https://github.com/gustavodiasdev/opencode-wencode-auth)
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
-
-## ✨ 在您的 OpenCode 上使用 Qwen 最新最强的模型 Qwen3.5 Plus!
+中文文档见--[README.zh.md](README.zh.md)
+---
+## ✨ Use Qwen's Latest and Most Powerful Model Qwen3.5 Plus on Your OpenCode!
 ![alt text](726a626d29d2c09e13e97c1a974e89eb.jpg)
 ![alt text](4f5d83ebb1d715f68fa839bf856dd7b3.jpg)
 
-## 📋 快速开始
+## 📋 Quick Start
 
-### 1. 安装插件
+### 1. Install Plugin
 
 ```bash
 cd ~/.config/opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```
 
-### 2. 启用插件
+### 2. Enable Plugin
 
-编辑 `~/.config/opencode/opencode.jsonc`：
+Edit `~/.config/opencode/opencode.jsonc`:
 
 ```json
 {
@@ -28,100 +29,100 @@ cd ~/.config/opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 }
 ```
 
-### 3. 登录认证
+### 3. Login Authentication
 
 ```bash
 opencode auth login
 ```
 
-然后疯狂按住"↓",选择 **"Other"** → 输入 `qwen-code` → 选择 **"Qwen Code (qwen.ai OAuth)"**
+Then repeatedly press "↓" and select **"Other"** → Enter `qwen-code` → Select **"Qwen Code (qwen.ai OAuth)"**
 
-浏览器会自动打开，登录 qwen.ai 并授权即可。
-
----
-
-## ✨ 核心特性
-
-### 基础功能
-- 🔐 **OAuth Device Flow** - 基于 RFC 8628 的标准认证流程
-- 🆓 **1000 次/天免费** - 无需 API Key，无需信用卡
-- 🔄 **自动 Token 刷新** - 过期前自动续期
-- 🔗 **凭证共享** - 与 Qwen Code CLI 共享 `~/.qwen/oauth_creds.json`
-
-### 改进功能（本版本独有）
-- ⏱️ **请求节流** - 控制 1 秒/次，避免触发 60 次/分钟限制
-- 📡 **429 自动重试** - 遇到限流自动等待后重试
-- 🎲 **请求抖动** - 0.5-1.5s 随机延迟，避免固定模式
-- 🏷️ **请求头对齐** - 与 qwen-code CLI 完全一致的 Headers
+Browser will open automatically, log in to qwen.ai and authorize.
 
 ---
 
-## 🎯 可用模型
+## ✨ Core Features
 
-> **重要**：Qwen OAuth 仅支持 2 个模型，与 qwen-code CLI 完全对齐。
+### Basic Features
+- 🔐 **OAuth Device Flow** - Standard authentication flow based on RFC 8628
+- 🆓 **1000 times/day Free** - No API Key, no credit card required
+- 🔄 **Auto Token Refresh** - Automatically renews before expiration
+- 🔗 **Credential Sharing** - Shares `~/.qwen/oauth_creds.json` with Qwen Code CLI
 
-| 模型 | 上下文 | 最大输出 | 说明 |
-|------|--------|---------|------|
-| `coder-model` | 1M tokens | 64K tokens | 代码模型（默认，推荐） |
-| `vision-model` | 128K tokens | 32K tokens | 视觉模型 |
+### Enhanced Features (This Version)
+- ⏱️ **Request Throttling** - Control 1 time/second, avoid hitting 60 times/minute limit
+- 📡 **429 Auto Retry** - Automatically wait and retry when rate limited
+- 🎲 **Request Jitter** - 0.5-1.5s random delay, avoid fixed patterns
+- 🏷️ **Header Alignment** - Exactly matching headers with qwen-code CLI
 
-### 使用示例
+---
+
+## 🎯 Available Models
+
+> **Important**: Qwen OAuth only supports 2 models, fully aligned with qwen-code CLI.
+
+| Model | Context | Max Output | Description |
+|------|---------|------------|-------------|
+| `coder-model` | 1M tokens | 64K tokens | Code model (default, recommended) |
+| `vision-model` | 128K tokens | 32K tokens | Vision model |
+
+### Usage Examples
 
 ```bash
-# 使用代码模型（推荐）
+# Use code model (recommended)
 opencode --provider qwen-code --model coder-model
 
-# 使用视觉模型
+# Use vision model
 opencode --provider qwen-code --model vision-model
 ```
 
-> **注意**：![alt text](image.png)
-**根据qwen code描述,coder-model 模型就是最新发布的qwen 3.5 plus**
+> **Note**: ![alt text](image.png)
+>**According to qwen code description, coder-model is the newly released qwen 3.5 plus**
 
 
 ---
 
-## 📊 使用限制
+## 📊 Usage Limits
 
-| 计划 | 速率限制 | 每日限制 |
-|------|---------|---------|
-| Free (OAuth) | 60 次/分钟 | 1000 次/天 |
+| Plan | Rate Limit | Daily Limit |
+|------|------------|-------------|
+| Free (OAuth) | 60 times/minute | 1000 times/day |
 
-> 限制于北京时间次日 0 点重置。如需更高限制，可使用 [DashScope API](https://dashscope.aliyun.com)。
+> Limits reset at 0:00 Beijing Time next day. For higher limits, use [DashScope API](https://dashscope.aliyun.com).
 
 ---
 
-## ⚙️ 插件工作原理
+## ⚙️ How the Plugin Works
 
-### 整体流程
+### Overall Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        用户输入问题                              │
+│                        User Input Question                       │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                      OpenCode CLI                                │
 │  ┌────────────────────────────────────────────────────────────┐ │
-│  │ 加载插件                                                    │ │
-│  │   ├─ loader: 返回 apiKey + fetch 函数                       │ │
-│  │   └─ methods: 处理 OAuth 认证                               │ │
+│  │  Load Plugin                                                │ │
+│  │   ├─ loader: Returns apiKey + fetch function                │ │
+│  │   └─ methods: Handles OAuth authentication                  │ │
 │  └────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    插件 fetch 拦截器                              │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │ 1. 添加 Headers                                           │  │
-│  │    - User-Agent: QwenCode/0.10.3 (linux; x64)            │  │
-│  │    - X-DashScope-CacheControl: enable                    │  │
-│  │    - X-DashScope-AuthType: qwen-oauth                    │  │
-│  │ 2. 添加 Authorization: Bearer <token>                     │  │
-│  │ 3. 请求节流 (1 秒间隔 + 随机抖动)                           │  │
-│  │ 4. 429 处理 (等待后重试)                                    │  │
-│  └──────────────────────────────────────────────────────────┘  │
+│                    Plugin fetch Interceptor                      │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │ 1. Add Headers                                            │   │
+│  │    - User-Agent: QwenCode/0.10.3 (linux; x64)           │   │
+│  │    - X-DashScope-CacheControl: enable                     │   │
+│  │    - X-DashScope-AuthType: qwen-oauth                    │   │
+│  │ 2. Add Authorization: Bearer <token>                      │   │
+│  │ 3. Request Throttling (1 second interval + jitter)       │   │
+│  │ 4. 429 Handling (wait and retry)                          │   │
+│  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -130,28 +131,28 @@ opencode --provider qwen-code --model vision-model
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 插件的三个角色
+### Three Roles of the Plugin
 
-| 角色 | 函数 | 作用 |
-|------|------|------|
-| **认证提供者** | `loader` | 返回配置（apiKey + baseURL + fetch） |
-| **请求拦截器** | `fetch` | 拦截所有请求，添加 Headers + 节流 |
-| **OAuth 入口** | `methods` | 处理用户登录，获取 access token |
+| Role | Function | Purpose |
+|------|----------|---------|
+| **Auth Provider** | `loader` | Returns config (apiKey + baseURL + fetch) |
+| **Request Interceptor** | `fetch` | Intercepts all requests, adds headers + throttling |
+| **OAuth Entry** | `methods` | Handles user login, gets access token |
 
 ---
 
-## 🔬 设计细节
+## 🔬 Design Details
 
-### 1. 请求节流（Throttling）
+### 1. Request Throttling
 
-**问题**：OpenCode 产生请求比 Qwen Code CLI 多，容易触发 60 次/分钟限制。
+**Problem**: OpenCode generates more requests than Qwen Code CLI, easily hitting 60 times/minute limit.
 
-**解决**：请求队列控制速率。
+**Solution**: Request queue controls rate.
 
 ```typescript
 class RequestQueue {
   private lastRequestTime = 0;
-  private readonly MIN_INTERVAL = 1000; // 1 秒
+  private readonly MIN_INTERVAL = 1000; // 1 second
 
   async enqueue<T>(fn: () => Promise<T>): Promise<T> {
     const elapsed = Date.now() - this.lastRequestTime;
@@ -167,15 +168,15 @@ class RequestQueue {
 }
 ```
 
-**效果**：确保每次请求间隔 ≥ 1 秒，不会超过 60 次/分钟。
+**Effect**: Ensures each request interval ≥ 1 second, won't exceed 60 times/minute.
 
 ---
 
-### 2. 请求抖动（Jitter）
+### 2. Request Jitter
 
-**问题**：固定间隔的请求模式可能被识别为"非正常用户"。
+**Problem**: Fixed interval requests may be identified as "abnormal user".
 
-**解决**：在 1 秒基础上添加 0.5-1.5s 随机延迟。
+**Solution**: Add 0.5-1.5s random delay on top of 1 second.
 
 ```typescript
 // src/plugin/request-queue.ts
@@ -187,154 +188,154 @@ private getJitter(): number {
 }
 ```
 
-**效果**：请求间隔 = 1 秒 + (0.5~1.5s 随机) = 1.5-2.5s 随机，更像真实用户行为。
+**Effect**: Request interval = 1 second + (0.5~1.5s random) = 1.5-2.5s random, more like real user behavior.
 
 ---
 
-### 3. 请求头对齐（Header Alignment）
+### 3. Header Alignment
 
-**问题**：服务器可能通过 Headers 识别客户端来源。
+**Problem**: Server may identify client source through Headers.
 
-**解决**：模拟 qwen-code CLI 的 Headers。
+**Solution**: Simulate qwen-code CLI Headers.
 
 ```typescript
 headers.set('User-Agent', `QwenCode/0.10.3 (${platform}; ${arch})`);
 headers.set('X-DashScope-CacheControl', 'enable');
 headers.set('X-DashScope-UserAgent', `QwenCode/0.10.3 (${platform}; ${arch})`);
-headers.set('X-DashScope-AuthType', 'qwen-oauth');
+headers.set('X-DashScope-AuthType', 'qwen-oauth`);
 ```
 
-**效果**：从 Headers 看，请求与 qwen-code CLI 无法区分。
+**Effect**: From Headers perspective, requests are indistinguishable from qwen-code CLI.
 
 ---
 
-### 4. 429 错误处理
+### 4. 429 Error Handling
 
-**问题**：即使节流，仍可能偶尔触发限流。
+**Problem**: Even with throttling, occasional rate limiting may still occur.
 
-**解决**：自动等待后重试。
+**Solution**: Automatically wait and retry.
 
 ```typescript
 if (response.status === 429) {
   const retryAfter = response.headers.get('Retry-After') || '60';
   await sleep(parseInt(retryAfter) * 1000);
-  return fetch(input, { headers }); // 重试
+  return fetch(input, { headers }); // Retry
 }
 ```
 
-**效果**：遇到限流自动恢复，无需用户干预。
+**Effect**: Automatically recovers from rate limiting without user intervention.
 
 ---
 
-## ✨ 改进功能
+## ✨ Enhanced Features
 
-| 功能 | 说明 |
-|------|------|
-| ⏱️ 请求节流 | 1 秒间隔 + 0.5-1.5s 随机抖动，避免触发 60 次/分钟限制 |
-| 📡 429 自动重试 | 遇到限流自动等待后重试 |
-| 🏷️ 请求头对齐 | User-Agent、X-DashScope-* 与 qwen-code CLI 完全一致 |
-| 💾 Token 缓存 | 5 分钟内不重复刷新，减少额外请求 |
-| 🎯 模型精简 | 仅支持 2 个模型（coder-model、vision-model），与 qwen-code CLI 对齐 |
+| Feature | Description |
+|---------|-------------|
+| ⏱️ Request Throttling | 1 second interval + 0.5-1.5s random jitter, avoid hitting 60 times/minute limit |
+| 📡 429 Auto Retry | Automatically wait and retry when rate limited |
+| 🏷️ Header Alignment | User-Agent, X-DashScope-* exactly matching qwen-code CLI |
+| 💾 Token Cache | No refresh within 5 minutes, reduce extra requests |
+| 🎯 Streamlined Models | Only supports 2 models (coder-model, vision-model), aligned with qwen-code CLI |
 
 ---
 
-## 🔧 故障排查
+## 🔧 Troubleshooting
 
-### Token 过期
+### Token Expiration
 
-插件会自动刷新 Token。如仍有问题：
+Plugin automatically refreshes Token. If issues persist:
 
 ```bash
-# 删除旧凭证
+# Delete old credentials
 rm ~/.qwen/oauth_creds.json
 
-# 重新认证
+# Re-authenticate
 opencode auth login
 ```
 
-### 429 错误频繁
+### Frequent 429 Errors
 
-- 检查是否同时运行多个 OpenCode 实例
-- 等待配额重置（北京时间 0 点）
+- Check if multiple OpenCode instances are running simultaneously
+- Wait for quota reset (0:00 Beijing Time)
 
-### 插件不显示
+### Plugin Not Showing
 
-在 `opencode auth login` 中：
-1. 选择 **"Other"**
-2. 输入 `qwen-code`
+In `opencode auth login`:
+1. Select **"Other"**
+2. Enter `qwen-code`
 
 ---
 
-## 🛠️ 本地开发
+## 🛠️ Local Development
 
-### 方法一：使用 npm link（推荐）
+### Method 1: Use npm link (Recommended)
 
-**步骤 1：克隆项目**
+**Step 1: Clone Project**
 
 ```bash
 git clone https://github.com/RunMintOn/OpenCode-Qwen-Proxy.git
 cd OpenCode-Qwen-Proxy
 ```
 
-**步骤 2：安装依赖**
+**Step 2: Install Dependencies**
 
 ```bash
 npm install
 ```
 
-**步骤 3：链接插件**
+**Step 3: Link Plugin**
 
 ```bash
-# 在插件项目目录下执行 link
+# Run link in plugin project directory
 npm link
 ```
 
-**步骤 4：在 OpenCode 中配置**
+**Step 4: Configure in OpenCode**
 
 ```bash
-# 进入 OpenCode 配置目录
+# Enter OpenCode config directory
 cd ~/.config/opencode
 
-# 如果已有 package.json，直接添加依赖
+# If package.json already exists, just add dependency
 npm install opencode-qwen-proxy --save
 
-# 如果没有 package.json，先初始化
+# If no package.json, initialize first
 npm init -y
 npm install opencode-qwen-proxy --save
 ```
 
-**步骤 5：验证插件加载**
+**Step 5: Verify Plugin Loaded**
 
 ```bash
-# 重启 OpenCode 或开始新对话
+# Restart OpenCode or start new conversation
 opencode --version
 ```
 
 ---
 
-### 方法二：使用 file: 协议（适用于需要指定特定版本）
+### Method 2: Use file: Protocol (For Specific Version)
 
-**步骤 1-3：同上**
+**Step 1-3: Same as above**
 
 ```bash
-# 克隆项目并安装依赖
+# Clone project and install dependencies
 git clone https://github.com/RunMintOn/OpenCode-Qwen-Proxy.git
 cd OpenCode-Qwen-Proxy
 npm install
 ```
 
-**步骤 4：先构建插件**
+**Step 4: Build Plugin First**
 
 ```bash
-# 构建插件（必须先构建）
+# Build plugin (must build first)
 npm run build
 ```
 
-> 注意：`file:` 协议需要指向包含 `package.json` 的目录，所以必须先执行构建。
+> Note: `file:` protocol needs to point to directory containing `package.json`, so build must run first.
 
-**步骤 5：配置本地链接**
+**Step 5: Configure Local Link**
 
-编辑 `~/.config/opencode/package.json`：
+Edit `~/.config/opencode/package.json`:
 
 ```json
 {
@@ -344,11 +345,11 @@ npm run build
 }
 ```
 
-> 将 `/path/to/OpenCode-Qwen-Proxy` 替换为实际的绝对路径，例如：
+> Replace `/path/to/OpenCode-Qwen-Proxy` with actual absolute path, for example:
 > - Linux/Mac: `file:/home/username/OpenCode-Qwen-Proxy`
 > - Windows: `file:C:/Users/username/OpenCode-Qwen-Proxy`
 
-**步骤 6：安装依赖**
+**Step 6: Install Dependencies**
 
 ```bash
 cd ~/.config/opencode && npm install
@@ -356,105 +357,105 @@ cd ~/.config/opencode && npm install
 
 ---
 
-### 开发模式（推荐）
+### Development Mode (Recommended)
 
-开发过程中可以使用 watch 模式，自动重新加载：
+During development, use watch mode for auto-reload:
 
 ```bash
-# 在插件项目目录下
+# In plugin project directory
 npm run dev
 ```
 
-这样修改代码后会自动重新构建，方便实时调试。
+This will auto-rebuild when code changes, convenient for real-time debugging.
 
 ---
 
-### 构建命令说明
+### Build Commands Explanation
 
-| 命令 | 说明 |
-|------|------|
-| `npm run build` | 构建生产版本到 `dist/` 目录 |
-| `npm run dev` | 开发模式，监听文件变化自动重新构建 |
-| `npm run typecheck` | TypeScript 类型检查 |
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Build production version to `dist/` directory |
+| `npm run dev` | Development mode, watch files and auto rebuild |
+| `npm run typecheck` | TypeScript type checking |
 
 ---
 
-### 调试技巧
+### Debugging Tips
 
-**1. 启用调试日志**
+**1. Enable Debug Logs**
 
 ```bash
-# 临时启用调试日志
+# Temporarily enable debug logs
 OPENCODE_QWEN_DEBUG=1 opencode ...
 ```
 
-**2. 查看插件日志**
+**2. View Plugin Logs**
 
-插件运行时会输出调试信息（如果启用了调试模式），可以帮助排查问题。
+Plugin outputs debug information when debug mode is enabled, helps troubleshooting.
 
-**3. 检查凭证**
+**3. Check Credentials**
 
 ```bash
-# 查看凭证文件位置
+# View credential file location
 cat ~/.qwen/oauth_creds.json
 ```
 
 ---
 
-### 常见问题
+### FAQ
 
-**Q：修改代码后需要重新 install 吗？**
+**Q: Do I need to reinstall after modifying code?**
 
-> A：使用 `npm link` 不需要；使用 `file:` 协议每次修改代码后需要重新 `npm install`（或者用 `npm run dev` 自动构建后重启 OpenCode）。
+> A: Using `npm link` - no; Using `file:` protocol - yes, need to reinstall after code changes (or use `npm run dev` auto-build then restart OpenCode).
 
-**Q：如何确认插件已加载？**
+**Q: How to confirm plugin is loaded?**
 
-> A：在 OpenCode 中执行 `opencode auth login`，如果能看到 "Qwen Code (qwen.ai OAuth)" 选项，说明插件已正确加载。
+> A: In OpenCode, execute `opencode auth login`, if you can see "Qwen Code (qwen.ai OAuth)" option, plugin is loaded correctly.
 
-**Q：遇到问题怎么办？**
+**Q: What to do if problems occur?**
 
-> A：
-> 1. 确认 `~/.config/opencode/opencode.jsonc` 中已添加 `"plugin": ["opencode-qwen-proxy"]`
-> 2. 运行 `npm run typecheck` 检查代码是否有语法错误
-> 3. 查看控制台输出是否有错误信息
+> A:
+> 1. Confirm `"plugin": ["opencode-qwen-proxy"]` is added in `~/.config/opencode/opencode.jsonc`
+> 2. Run `npm run typecheck` to check for syntax errors
+> 3. Check console output for error messages
 
 ---
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 opencode-qwen-proxy/
 ├── src/
-│   ├── index.ts              # 插件入口（loader + fetch + methods）
-│   ├── constants.ts          # OAuth 端点、模型配置
-│   ├── types.ts              # TypeScript 类型
+│   ├── index.ts              # Plugin entry (loader + fetch + methods)
+│   ├── constants.ts          # OAuth endpoints, model configuration
+│   ├── types.ts              # TypeScript types
 │   ├── qwen/
 │   │   └── oauth.ts          # OAuth Device Flow + PKCE
 │   └── plugin/
-│       ├── request-queue.ts  # 请求队列 + 节流
-│       └── auth.ts           # 凭证管理
+│       ├── request-queue.ts  # Request queue + throttling
+│       └── auth.ts           # Credential management
 ├── package.json
 └── README.md
 ```
 
 ---
 
-## 🔗 相关项目
+## 🔗 Related Projects
 
-- **[opencode-qwencode-auth](https://github.com/gustavodiasdev/opencode-qwencode-auth)** - 本项目基于此插件改进
-- [qwen-code](https://github.com/QwenLM/qwen-code) - 官方 Qwen Code CLI
-- [OpenCode](https://opencode.ai) - AI 编程助手 CLI
-- [opencode-antigravity-auth](https://github.com/NoeFabris/opencode-antigravity-auth) - Google OAuth 参考实现
+- **[opencode-wencode-auth](https://github.com/gustavodiasdev/opencode-wencode-auth)** - Base of this project
+- [qwen-code](https://github.com/QwenLM/qwen-code) - Official Qwen Code CLI
+- [OpenCode](https://opencode.ai) - AI Programming Assistant CLI
+- [opencode-antigravity-auth](https://github.com/NoeFabris/opencode-antigravity-auth) - Google OAuth reference implementation
 
 
 ---
 
-## 📄 许可证
+## 📄 License
 
 MIT
 
 ---
 
 <p align="center">
-  基于 <a href="https://github.com/gustavodiasdev/opencode-qwencode-auth">opencode-qwencode-auth</a> 改进
+  Enhanced from <a href="https://github.com/gustavodiasdev/opencode-wencode-auth">opencode-wencode-auth</a>
 </p>
