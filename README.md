@@ -2,7 +2,7 @@
 
 > **改进版** - 在 [opencode-qwencode-auth](https://github.com/gustavodiasdev/opencode-qwencode-auth) 基础上添加了请求节流、429 处理、请求头对齐等增强功能
 
-![License](https://img.shields.io/github/license/gustavodiasdev/opencode-qwencode-auth)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
 
@@ -15,7 +15,7 @@
 ### 1. 安装插件
 
 ```bash
-cd ~/.opencode && npm install opencode-qwencode-auth
+cd ~/.opencode && npm install github:RunMintOn/OpenCode-Qwen-Auth
 ```
 
 ### 2. 启用插件
@@ -24,7 +24,7 @@ cd ~/.opencode && npm install opencode-qwencode-auth
 
 ```json
 {
-  "plugin": ["opencode-qwencode-auth"]
+  "plugin": ["opencode-qwen-proxy"]
 }
 ```
 
@@ -287,7 +287,7 @@ npm install
 ```json
 {
   "dependencies": {
-    "opencode-qwencode-auth": "...WHERE"
+    "opencode-qwen-proxy": "file:/path/to/OpenCode-Qwen-Auth"
   }
 }
 ```
