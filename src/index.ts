@@ -222,7 +222,10 @@ export const QwenAuthPlugin = async (_input: unknown) => {
               reasoning: m.reasoning,
               limit: { context: m.contextWindow, output: m.maxOutput },
               cost: m.cost,
-              modalities: { input: ['text'], output: ['text'] },
+              modalities: id === 'vision-model' 
+                ? { input: ['text', 'image'], output: ['text'] }
+                : { input: ['text'], output: ['text'] },
+              ...(id === 'vision-model' ? { attachment: true } : {}),
             },
           ])
         ),
