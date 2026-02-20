@@ -27,6 +27,7 @@ import { requestQueue } from './plugin/request-queue.js';
 const QWEN_CODE_VERSION = '0.10.3';
 
 const TOKEN_CACHE_DURATION = 5 * 60 * 1000;
+const REFRESH_BEFORE_EXPIRY_MS = 5 * 60 * 1000;
 let cachedToken: string | null = null;
 let cachedTokenExpiry = 0;
 let lastRefreshTime = 0;
@@ -65,17 +66,20 @@ async function getValidAccessToken(
 
   let accessToken = auth.access;
 
-  if (accessToken && auth.expires && Date.now() > auth.expires - 60_000 && auth.refresh) {
-    try {
-      const refreshed = await refreshAccessToken(auth.refresh);
-      accessToken = refreshed.accessToken;
-      saveCredentials(refreshed);
-      lastRefreshTime = Date.now();
-      cachedTokenExpiry = refreshed.expiryDate || Date.now() + 3600000;
-    } catch (e) {
-      const detail = e instanceof Error ? e.message : String(e);
-      logTechnicalDetail(`Token refresh falhou: ${detail}`);
-      accessToken = undefined;
+  if (accessToken && auth.expires && auth.refresh) {
+    const shouldRefresh = Date.now() > auth.expires - REFRESH_BEFORE_EXPIRY_MS;
+    if (shouldRefresh) {
+      try {
+        const refreshed = await refreshAccessToken(auth.refresh);
+        accessToken = refreshed.accessToken;
+        saveCredentials(refreshed);
+        lastRefreshTime = Date.now();
+        cachedTokenExpiry = refreshed.expiryDate || Date.now() + 3600000;
+        logTechnicalDetail(`Token refreshed proactively, new expiry: ${cachedTokenExpiry}`);
+      } catch (e) {
+        const detail = e instanceof Error ? e.message : String(e);
+        logTechnicalDetail(`Token refresh failed: ${detail}`);
+      }
     }
   }
 
