@@ -25,7 +25,29 @@ Edit `~/.config/opencode/opencode.jsonc`:
 
 ```json
 {
-  "plugin": ["opencode-qwen-proxy"]
+  "plugin": ["opencode-qwen-proxy"],
+  "provider": {
+    "qwen-code": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Qwen Code",
+      "options": {
+        "baseURL": "https://portal.qwen.ai/v1"
+      },
+      "models": {
+        "coder-model": {
+          "name": "Qwen Coder",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": { "input": ["text"], "output": ["text"] }
+        },
+        "vision-model": {
+          "name": "Qwen Vision",
+          "limit": { "context": 131072, "output": 32768 },
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -38,6 +60,14 @@ opencode auth login
 Then repeatedly press "↓" and select **"Other"** → Enter `qwen-code` → Select **"Qwen Code (qwen.ai OAuth)"**
 
 Browser will open automatically, log in to qwen.ai and authorize.
+
+### 4. Select Model
+
+```bash
+opencode models
+```
+
+You should see `qwen-code/coder-model` and `qwen-code/vision-model` in the list.
 
 ---
 
