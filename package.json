@@ -1,6 +1,6 @@
 {
   "name": "opencode-qwen-proxy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Qwen OAuth authentication plugin for OpenCode - Access Qwen AI models (Coder, Vision) with your qwen.ai account",
   "module": "index.ts",
   "type": "module",
