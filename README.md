@@ -19,6 +19,16 @@
 cd ~/.config/opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```
 
+### Upgrade from Older Versions (Fastest)
+
+```bash
+cd ~/.config/opencode
+npm uninstall opencode-qwen-proxy
+npm install github:RunMintOn/OpenCode-Qwen-Proxy#v1.0.2
+```
+
+Then fully restart OpenCode.
+
 ### 2. Enable Plugin
 
 Edit `~/.config/opencode/opencode.jsonc`:
