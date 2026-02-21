@@ -24,10 +24,13 @@ cd ~/.config/opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```bash
 cd ~/.config/opencode
 npm uninstall opencode-qwen-proxy
-npm install github:RunMintOn/OpenCode-Qwen-Proxy#v1.0.2
+npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```
 
 Then fully restart OpenCode.
+
+If you need to pin a specific version for troubleshooting, use:
+`npm install github:RunMintOn/OpenCode-Qwen-Proxy#vX.Y.Z`
 
 ### 2. Enable Plugin
 

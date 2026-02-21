@@ -23,10 +23,13 @@ cd ~/.config/opencode && npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```bash
 cd ~/.config/opencode
 npm uninstall opencode-qwen-proxy
-npm install github:RunMintOn/OpenCode-Qwen-Proxy#v1.0.2
+npm install github:RunMintOn/OpenCode-Qwen-Proxy
 ```
 
 安装完成后请完全重启 OpenCode。
+
+如果你需要固定某个版本排查问题，可使用：
+`npm install github:RunMintOn/OpenCode-Qwen-Proxy#vX.Y.Z`
 
 ### 2. 启用插件
 
