@@ -12,7 +12,7 @@ import { spawn } from 'node:child_process';
 
 import { QWEN_PROVIDER_ID, QWEN_API_CONFIG, QWEN_MODELS } from './constants.js';
 import type { QwenCredentials } from './types.js';
-import { saveCredentials } from './plugin/auth.js';
+import { loadCredentials, saveCredentials } from './plugin/auth.js';
 import {
   generatePKCE,
   requestDeviceAuthorization,
@@ -32,6 +32,13 @@ let cachedToken: string | null = null;
 let cachedTokenExpiry = 0;
 let lastRefreshTime = 0;
 
+interface RuntimeAuthState {
+  type: string;
+  access?: string;
+  refresh?: string;
+  expires?: number;
+}
+
 // ============================================
 // Helpers
 // ============================================
@@ -48,15 +55,61 @@ function openBrowser(url: string): void {
   }
 }
 
-/** Obtem um access token valido (com refresh se necessario) */
-async function getValidAccessToken(
-  getAuth: () => Promise<{ type: string; access?: string; refresh?: string; expires?: number }>,
-): Promise<string | null> {
-  const auth = await getAuth();
+function resetTokenCache(): void {
+  cachedToken = null;
+  cachedTokenExpiry = 0;
+  lastRefreshTime = 0;
+}
 
+function runtimeAuthToCredentials(auth: RuntimeAuthState | null): QwenCredentials | null {
   if (!auth || auth.type !== 'oauth') {
     return null;
   }
+
+  if (!auth.access && !auth.refresh) {
+    return null;
+  }
+
+  return {
+    accessToken: auth.access || '',
+    refreshToken: auth.refresh,
+    expiryDate: auth.expires,
+    tokenType: 'Bearer',
+  };
+}
+
+function getExpiryScore(credentials: QwenCredentials | null): number {
+  return credentials?.expiryDate ?? 0;
+}
+
+function mergeCredentialSources(
+  runtimeCredentials: QwenCredentials | null,
+  fileCredentials: QwenCredentials | null,
+): { accessToken: string | null; expiryDate?: number; refreshCandidates: string[] } {
+  const credentialsByFreshness = [runtimeCredentials, fileCredentials]
+    .filter((item): item is QwenCredentials => Boolean(item))
+    .sort((a, b) => getExpiryScore(b) - getExpiryScore(a));
+
+  const freshest = credentialsByFreshness[0];
+  const accessToken = freshest?.accessToken || runtimeCredentials?.accessToken || fileCredentials?.accessToken || null;
+  const expiryDate = freshest?.expiryDate || runtimeCredentials?.expiryDate || fileCredentials?.expiryDate;
+  const refreshCandidates = [
+    freshest?.refreshToken,
+    fileCredentials?.refreshToken,
+    runtimeCredentials?.refreshToken,
+  ].filter((token, index, arr): token is string => Boolean(token) && arr.indexOf(token) === index);
+
+  return { accessToken, expiryDate, refreshCandidates };
+}
+
+/** Obtem um access token valido (com refresh se necessario) */
+async function getValidAccessToken(
+  getAuth: () => Promise<RuntimeAuthState>,
+): Promise<string | null> {
+  const auth = await getAuth();
+  const runtimeCredentials = runtimeAuthToCredentials(auth);
+  const fileCredentials = loadCredentials();
+  const merged = mergeCredentialSources(runtimeCredentials, fileCredentials);
 
   const now = Date.now();
 
@@ -64,18 +117,25 @@ async function getValidAccessToken(
     return cachedToken;
   }
 
-  let accessToken = auth.access;
+  let accessToken = merged.accessToken;
+  let tokenExpiry = merged.expiryDate;
 
-  if (accessToken && auth.expires && auth.refresh) {
-    const shouldRefresh = Date.now() > auth.expires - REFRESH_BEFORE_EXPIRY_MS;
-    if (shouldRefresh) {
+  const shouldRefresh =
+    merged.refreshCandidates.length > 0 &&
+    (!accessToken || !tokenExpiry || now > tokenExpiry - REFRESH_BEFORE_EXPIRY_MS);
+
+  if (shouldRefresh) {
+    for (const refreshToken of merged.refreshCandidates) {
       try {
-        const refreshed = await refreshAccessToken(auth.refresh);
+        const refreshed = await refreshAccessToken(refreshToken);
         accessToken = refreshed.accessToken;
+        tokenExpiry = refreshed.expiryDate || Date.now() + 3600000;
         saveCredentials(refreshed);
         lastRefreshTime = Date.now();
-        cachedTokenExpiry = refreshed.expiryDate || Date.now() + 3600000;
+        cachedToken = accessToken;
+        cachedTokenExpiry = tokenExpiry;
         logTechnicalDetail(`Token refreshed proactively, new expiry: ${cachedTokenExpiry}`);
+        return accessToken;
       } catch (e) {
         const detail = e instanceof Error ? e.message : String(e);
         logTechnicalDetail(`Token refresh failed: ${detail}`);
@@ -83,9 +143,14 @@ async function getValidAccessToken(
     }
   }
 
+  if (accessToken && tokenExpiry && now > tokenExpiry) {
+    resetTokenCache();
+    return null;
+  }
+
   if (accessToken) {
     cachedToken = accessToken;
-    cachedTokenExpiry = auth.expires || Date.now() + 3600000;
+    cachedTokenExpiry = tokenExpiry || Date.now() + 3600000;
     lastRefreshTime = now;
   }
 
@@ -102,7 +167,7 @@ export const QwenAuthPlugin = async (_input: unknown) => {
       provider: QWEN_PROVIDER_ID,
 
       loader: async (
-        getAuth: () => Promise<{ type: string; access?: string; refresh?: string; expires?: number }>,
+        getAuth: () => Promise<RuntimeAuthState>,
         provider: { models?: Record<string, { cost?: { input: number; output: number } }> },
       ) => {
         // Zerar custo dos modelos (gratuito via OAuth)
@@ -119,6 +184,11 @@ export const QwenAuthPlugin = async (_input: unknown) => {
           apiKey: '',
           baseURL: QWEN_API_CONFIG.baseUrl,
           async fetch(input: RequestInfo, init?: RequestInit) {
+            const accessToken = await getValidAccessToken(getAuth);
+            if (!accessToken) {
+              throw new Error('[Qwen] No valid access token. Please run "opencode auth login".');
+            }
+
             const userAgent = `QwenCode/${QWEN_CODE_VERSION} (${process.platform}; ${process.arch})`;
             const headers = new Headers(init?.headers);
             headers.set('Authorization', `Bearer ${accessToken}`);
@@ -133,9 +203,18 @@ export const QwenAuthPlugin = async (_input: unknown) => {
                 headers,
               });
 
+              if (response.status === 401 || response.status === 403) {
+                resetTokenCache();
+                const retriedToken = await getValidAccessToken(getAuth);
+                if (retriedToken && retriedToken !== accessToken) {
+                  headers.set('Authorization', `Bearer ${retriedToken}`);
+                  return fetch(input, { ...init, headers });
+                }
+              }
+
               if (response.status === 429) {
                 const retryAfter = response.headers.get('Retry-After') || '60';
-                await new Promise(resolve => setTimeout(resolve, parseInt(retryAfter) * 1000));
+                await new Promise(resolve => setTimeout(resolve, Number.parseInt(retryAfter, 10) * 1000));
                 return fetch(input, { ...init, headers });
               }
 
